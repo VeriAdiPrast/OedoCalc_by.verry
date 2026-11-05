@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
+  <!-- Kunci versi ke 4.44.0 alih-alih @latest -->
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@4.44.0/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@4.44.0/dist/lite.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OedoCalc Pro - Geoteknik</title>
@@ -28,7 +30,7 @@
   </head>
   <body>
     <!-- Hanya memuat 3 pustaka Python murni untuk menjamin kestabilan Pyodide -->
-    <gradio-lite requirements="pandas, matplotlib, numpy, huggingface_hub<1.0">
+    <gradio-lite requirements="pandas, matplotlib, numpy">
 import gradio as gr
 import numpy as np
 import matplotlib.pyplot as plt
