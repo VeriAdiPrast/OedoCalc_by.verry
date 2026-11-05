@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OedoCalc Pro - Geoteknik</title>
-    <!-- Rujukan CDN Gradio-Lite Versi Murni 4.20.0 -->
+    <!-- Mesin Gradio-Lite 4.20.0 yang stabil -->
     <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@4.20.0/dist/lite.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@4.20.0/dist/lite.css" />
     <style>
@@ -17,7 +17,7 @@
     </style>
   </head>
   <body>
-    <!-- Hanya deklarasikan 3 pustaka inti tanpa memicu dependensi HTTP/wheel eksternal -->
+    <!-- Di sinilah kode Python Anda dibungkus agar bisa dieksekusi -->
     <gradio-lite requirements="pandas, matplotlib, numpy">
 import gradio as gr
 import numpy as np
