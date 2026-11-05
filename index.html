@@ -28,7 +28,7 @@
   </head>
   <body>
     <!-- Hanya memuat 3 pustaka Python murni untuk menjamin kestabilan Pyodide -->
-    <gradio-lite requirements="pandas, matplotlib, numpy">
+    <gradio-lite requirements="pandas, matplotlib, numpy, huggingface_hub<1.0">
 import gradio as gr
 import numpy as np
 import matplotlib.pyplot as plt
