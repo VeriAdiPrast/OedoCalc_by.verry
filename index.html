@@ -1,24 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
-<!-- Menggunakan versi 4.36.0 yang terbukti stabil tanpa konflik huggingface-hub -->
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@4.36.0/dist/lite.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@4.36.0/dist/lite.css" />
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OedoCalc Pro - Geoteknik</title>
-    <!-- Script otomatis membersihkan Service Worker lama untuk mencegah galat cache Pyodide -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister();
-          }
-        });
-      }
-    </script>
-    <!-- Menggunakan CDN Gradio-Lite versi paling baru -->
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@latest/dist/lite.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@latest/dist/lite.css" />
+    <!-- Rujukan CDN Gradio-Lite Versi Murni 4.20.0 -->
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@4.20.0/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@4.20.0/dist/lite.css" />
     <style>
       body { 
         margin: 0; 
@@ -29,7 +17,7 @@
     </style>
   </head>
   <body>
-    <!-- Hanya memuat 3 pustaka Python murni untuk menjamin kestabilan Pyodide -->
+    <!-- Hanya deklarasikan 3 pustaka inti tanpa memicu dependensi HTTP/wheel eksternal -->
     <gradio-lite requirements="pandas, matplotlib, numpy">
 import gradio as gr
 import numpy as np
@@ -43,7 +31,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
         if file_excel is None:
             return "Error: Unggah file data mentah (.csv atau .xlsx) terlebih dahulu.", "", None, None, None
 
-        # 1. Pembacaan Data Mentah Excel / CSV
+        # 1. BACA DATA MENTAH
         if file_excel.name.endswith('.csv'):
             df = pd.read_csv(file_excel.name)
         else:
@@ -70,7 +58,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
 
         akar_waktu = np.sqrt(waktu_menit)
 
-        # 2. Grafik Penurunan vs Akar Waktu Per Beban
+        # 2. GRAFIK PENURUNAN VS AKAR WAKTU
         total_grafik = len(kolom_beban)
         cols_grid = 2
         rows_grid = math.ceil(total_grafik / cols_grid)
@@ -95,7 +83,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
 
         plt.tight_layout()
 
-        # 3. Analisis Konsolidasi (e - log p) & Konversi kPa
+        # 3. KONSOLIDASI (e - log p) & KONVERSI KPA
         p_kpa = [b * 98.0665 for b in beban_list]
         e_list = [(e0 - ((dh / H0) * (1 + e0))) for dh in penurunan_akhir_list]
         
@@ -109,7 +97,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
         t90_tahun = (Tv * (H_dr ** 2)) / cv if cv > 0 else 0
         t90_bulan = t90_tahun * 12.0
 
-        # 4. Grafik Kurva Utama e - log p
+        # 4. GRAFIK UTAMA e - log p
         fig_elogp, ax2 = plt.subplots(figsize=(7, 5))
         ax2.plot(p_kpa, e_list, marker='s', linestyle='-', color='teal', linewidth=2)
         ax2.set_xscale('log')
@@ -120,7 +108,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
         ax2.invert_yaxis()
         plt.tight_layout()
 
-        # 5. Klasifikasi Teknis & Perhitungan RAB
+        # 5. KLASIFIKASI TEKNIS & ESTIMASI RAB
         if Cc < 0.2:
             kemampatan = "RENDAH (Low Compressibility) - Tanah Padat"
             rekomendasi = "Pondasi Dangkal (Footplat / Batu Kali)."
@@ -155,7 +143,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
 
         rab_text = f"ESTIMASI TOTAL BIAYA PROYEK ({luas_bangunan} m²):\nRp {total_bawah:,.0f} s/d Rp {total_atas:,.0f}"
 
-        # 6. Ekspor Hasil Ringkasan CSV Native
+        # 6. EKSPOR CSV
         df_export = pd.DataFrame({
             'Beban (kg/cm2)': beban_list,
             'Beban (kPa)': p_kpa,
@@ -169,3 +157,64 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
 
     except Exception as e:
         return f"Terjadi kesalahan pemrosesan: {str(e)}", "", None, None, None
+
+# CSS Glassmorphism Responsif Light/Dark Mode
+kustom_css = """
+.gradio-container { 
+    background-image: url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1920&auto=format&fit=crop') !important; 
+    background-size: cover !important; 
+    background-position: center !important; 
+    background-attachment: fixed !important; 
+}
+#papan-utama { 
+    background-color: rgba(255, 255, 255, 0.88) !important; 
+    padding: 25px !important; 
+    border-radius: 15px !important; 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important; 
+    backdrop-filter: blur(8px) !important;
+    margin: 20px !important; 
+}
+#papan-utama h1, #papan-utama h2, #papan-utama h3, #papan-utama p, #papan-utama span, #papan-utama label { color: #0f172a !important; }
+@media (prefers-color-scheme: dark) {
+    #papan-utama { background-color: rgba(15, 23, 42, 0.88) !important; }
+    #papan-utama h1, #papan-utama h2, #papan-utama h3, #papan-utama p, #papan-utama span, #papan-utama label { color: #f8fafc !important; }
+}
+"""
+
+with gr.Blocks(theme=gr.themes.Soft(), css=kustom_css) as aplikasi:
+    with gr.Column(elem_id="papan-utama"):
+        gr.Markdown("# 🧪 OedoCalc Pro: Analisis Konsolidasi Tanah & Geoteknik")
+        with gr.Row():
+            with gr.Column(scale=1):
+                file_input = gr.File(label="Unggah File Excel (.xlsx / .csv)")
+                D_input = gr.Number(label="Diameter Cincin (mm)", value=63.5)
+                H0_input = gr.Number(label="Tinggi Sampel H0 (mm)", value=20.0)
+                e0_input = gr.Number(label="Angka Pori Awal (e0)", value=1.15)
+                tebal_input = gr.Number(label="Tebal Lempung (m)", value=10.0)
+                cv_input = gr.Number(label="Cv (m²/thn)", value=1.5)
+                drainase_input = gr.Radio(choices=["1 Arah", "2 Arah (Atas & Bawah)"], value="2 Arah (Atas & Bawah)", label="Kondisi Drainase")
+                luas_input = gr.Number(label="Luas Area Proyek (m²)", value=500.0)
+                tombol_analisis = gr.Button("🚀 Olah Data & Buat Grafik", variant="primary")
+
+            with gr.Column(scale=1):
+                with gr.Tabs():
+                    with gr.TabItem("📄 Laporan Teknis"):
+                        laporan_out = gr.Textbox(label="Hasil Diagnosa Lab", lines=10)
+                    with gr.TabItem("💰 Estimasi RAB"):
+                        rab_out = gr.Textbox(label="Perkiraan Biaya", lines=6)
+                    with gr.TabItem("📈 Kurva Utama (e - log p)"):
+                        grafik_elogp_out = gr.Plot(label="Kurva e - log p")
+                    with gr.TabItem("📉 Grafik Penurunan Per Beban"):
+                        grafik_time_out = gr.Plot(label="Grafik Pembacaan Arloji vs √Waktu Per Beban")
+                file_csv_out = gr.File(label="📊 Unduh Hasil Ringkasan (.csv)")
+
+        tombol_analisis.click(
+            fn=proses_oedometer_lengkap, 
+            inputs=[file_input, D_input, H0_input, e0_input, tebal_input, cv_input, drainase_input, luas_input], 
+            outputs=[laporan_out, rab_out, grafik_elogp_out, grafik_time_out, file_csv_out]
+        )
+
+aplikasi.launch()
+    </gradio-lite>
+  </body>
+</html>
